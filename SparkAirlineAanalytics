@@ -1,0 +1,19 @@
+val airDF = spark.read.format("csv").option("inferSchema","true").option("header","true").option("mode","permissive").load("/home/harsh/Desktop/spark projects/Apache-Spark-Projects-master/AirlinesProject/airports.csv") 
+
+airDF.show
+
+airDF.createTempView("airports")
+
+spark.sql("""select count(AirportID) from airports where Latitude<0 and Longitude>0""").show
+
+spark.sql("""select Country, count(distinct(City)) from airports group by Country """).collect.foreach(println)
+
+spark.sql("""select Country, avg(Latitude), avg(Longitude) from airports group by Country """).collect.foreach(println)
+
+spark.sql("""select count(distinct DST) from airports  """).collect.foreach(println)
+
+sqlContext.sql("select Tz , count(Tz) from airports group by Tz").collect.foreach(println)
+
+val NorthWestAirportsDF=spark.sql("select AirportID, Name, Latitude, Longitude from airports where Latitude>0 and Longitude<0")
+
+NorthWestAirportDF.write.format("csv").mode("overwrite").save("/home/harsh/NorthWestAirports.csv") 
